@@ -1,0 +1,12 @@
+Life is Short, You Need Python!
+
+Python is a "glue language"
+:https://yohanes.gultom.id/2020/04/03/splitting-video-with-ffmpeg-and-python/
+:https://ammff.tistory.com/102
+: https://www.javatpoint.com/selenium-python
+
+Bettaries included
+:https://testdriven.io/blog/django-vs-flask/
+
+
+"English is the hottest new programming language" - Andrej Karpathy (previously Director of AI at Tesla, OpenAI)
