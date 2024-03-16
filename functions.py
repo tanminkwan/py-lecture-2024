@@ -30,13 +30,13 @@ def video_2_ndarray(input_file: str)-> tuple:
 
     return video, tot_duration, nb_frames
 
-def ndarray_2_video(video_new: np.ndarray, input_file: str):
+def ndarray_2_video(video_new: np.ndarray, output_file: str):
 
     new_width = video_new.shape[2]
     new_height = video_new.shape[1]
 
     # Path to output video file
-    output_file = 'output_' + input_file
+    #output_file = 'output_' + input_file
 
     # Define ffmpeg output
     ffmpeg_output = (
@@ -59,10 +59,10 @@ def ndarray_2_video(video_new: np.ndarray, input_file: str):
     ffmpeg_output.wait()
 
 def modi_video(func):
-    def wrapper(input_file):
+    def wrapper(input_file, output_file):
         video, _, _ = video_2_ndarray(input_file)
         result = func(video)
-        ndarray_2_video(result, input_file)
+        ndarray_2_video(result, output_file)
         return result
     return wrapper
 
@@ -122,21 +122,32 @@ def divide_takes(results: list, tot_duration: float, nb_frames: int, similarity:
     return groups
 
 def list_2_html(func):
+
     def wrapper(input_file):
 
+        # mp4파일의 video를 ndarray 형식으로 변환
         v_array, tot_duration, nb_frames = video_2_ndarray(input_file)
+        
+        # frame별로 이전 frame과의 유사성을 구하여 list를 return
         simularities_list = get_simularities_list(v_array)
+
+        # 유사도가 0.9 이하인 지점을 기준으로 분할하여 frame들을 grouping
         simularity_groups = divide_takes(simularities_list, tot_duration, nb_frames)
 
+        # 각 group 별 처음과 끝 frame을 image capture
         min_frame_list = [ g['min_frame_number'] for g in simularity_groups ]
         max_frame_list = [ g['max_frame_number'] for g in simularity_groups ]
         frames_list = min_frame_list + max_frame_list
+
         _capture_frames(v_array, frames_list)
 
-        added_groups = func(simularity_groups)
+        # 유사도 기준 grouping list를 func 에 의해 가공
+        new_simularity_groups = func(simularity_groups)
 
-        df = pd.DataFrame(added_groups)
+        # func 에 의해 가공된 list로 dataframe 생성 후 html 형식으로 출력
+        df = pd.DataFrame(new_simularity_groups)
         html_table = df.to_html(index=False, escape=False)
+        
         return html_table
     
     return wrapper

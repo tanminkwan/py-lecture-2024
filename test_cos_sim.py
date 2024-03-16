@@ -24,6 +24,9 @@ video = (
     .reshape([-1, height, width, 3])
 )
 
+print("video.shape : ",video.shape)
+print("video.type : ",type(video))
+
 #import cv2
 from PIL import Image
 from numpy import dot

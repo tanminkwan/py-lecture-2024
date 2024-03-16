@@ -1,7 +1,7 @@
 import ffmpeg
 import numpy as np
 
-input_file = 'SampleVideo_640x360_5mb.mp4'
+input_file = './media/SampleVideo_640x360_5mb.mp4'
 
 def get_ndarray(input_file: str)-> np.ndarray: 
     # Get video information
@@ -55,6 +55,20 @@ def create_output(video_new: np.ndarray, input_file: str):
     ffmpeg_output.stdin.close()
     ffmpeg_output.wait()
 
+
+def ndarray_2_video(video: np.ndarray, output_file: str):
+    """
+    Convert numpy array type video data to mp4 type video file.
+    """
+    # Define ffmpeg output
+    ffmpeg.output(
+        video.astype(np.uint8).tobytes(),
+        int(video.shape[1]),
+        int(video.shape[2]),
+        'rgb24',
+        output_file
+    ).run()
+
 def modi_video(func):
     def wrapper(input_file):
         video = get_ndarray(input_file)
@@ -106,4 +120,6 @@ def practice4(video):
 
     return new_video
 
-practice4(input_file)
+#practice4(input_file)
+video = get_ndarray(input_file)
+ndarray_2_video(video, 'test.mp4')
