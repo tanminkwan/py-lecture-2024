@@ -10,7 +10,7 @@ video_info = next(stream for stream in probe['streams'] if stream['codec_type'] 
 width = video_info['width']
 height = video_info['height']
 
-# Define ffmpeg input
+# Define ffmpeg input 
 out, err = (
     ffmpeg
     .input(input_file)

@@ -1,7 +1,7 @@
 import ffmpeg
 import numpy as np
 
-input_file = './media/SampleVideo_640x360_5mb.mp4'
+input_file = './media/SampleVideo_640x360_5mb_old.mp4'
 
 def get_ndarray(input_file: str)-> np.ndarray: 
     # Get video information
@@ -27,19 +27,16 @@ def get_ndarray(input_file: str)-> np.ndarray:
 
     return video
 
-def create_output(video_new: np.ndarray, input_file: str):
+def create_output(video_new: np.ndarray, output_file: str):
 
     new_width = video_new.shape[2]
     new_height = video_new.shape[1]
-
-    # Path to output video file
-    output_file = 'output_' + input_file
 
     # Define ffmpeg output
     ffmpeg_output = (
         ffmpeg
         .input('pipe:', format='rawvideo', pix_fmt='rgb24', s=f'{new_width}x{new_height}')
-        .output(output_file, pix_fmt='yuv420p', vcodec='libx264', r=30)
+        .output(output_file, pix_fmt='yuv420p', vcodec='libx264', r=20)
         .overwrite_output()
         .run_async(pipe_stdin=True)
     )
@@ -55,25 +52,11 @@ def create_output(video_new: np.ndarray, input_file: str):
     ffmpeg_output.stdin.close()
     ffmpeg_output.wait()
 
-
-def ndarray_2_video(video: np.ndarray, output_file: str):
-    """
-    Convert numpy array type video data to mp4 type video file.
-    """
-    # Define ffmpeg output
-    ffmpeg.output(
-        video.astype(np.uint8).tobytes(),
-        int(video.shape[1]),
-        int(video.shape[2]),
-        'rgb24',
-        output_file
-    ).run()
-
 def modi_video(func):
-    def wrapper(input_file):
+    def wrapper(input_file, output_file):
         video = get_ndarray(input_file)
         result = func(video)
-        create_output(result, input_file)
+        create_output(result, output_file)
         return result
     return wrapper    
 
@@ -120,6 +103,15 @@ def practice4(video):
 
     return new_video
 
-#practice4(input_file)
-video = get_ndarray(input_file)
-ndarray_2_video(video, 'test.mp4')
+@modi_video
+def practice5(video):
+
+    new_video = video.copy()
+    # RGB 값 바꾸기: 255 - 원래 값
+    new_video = new_video[150:]
+
+    return new_video
+
+practice5(input_file, 'test.mp4')
+#video = get_ndarray(input_file)
+#ndarray_2_video(video, 'test.mp4')
