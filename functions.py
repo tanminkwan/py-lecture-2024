@@ -1,3 +1,4 @@
+import os
 import ffmpeg
 import numpy as np
 from numpy import dot
@@ -30,7 +31,7 @@ def video_2_ndarray(input_file: str)-> tuple:
 
     return video, tot_duration, nb_frames
 
-def ndarray_2_video(video_new: np.ndarray, output_file: str):
+def ndarray_2_video(video_new: np.ndarray, output_file: str)-> None:
 
     new_width = video_new.shape[2]
     new_height = video_new.shape[1]
@@ -58,18 +59,10 @@ def ndarray_2_video(video_new: np.ndarray, output_file: str):
     ffmpeg_output.stdin.close()
     ffmpeg_output.wait()
 
-def modi_video(func):
-    def wrapper(input_file, output_file):
-        video, _, _ = video_2_ndarray(input_file)
-        result = func(video)
-        ndarray_2_video(result, output_file)
-        return result
-    return wrapper
-
 def _cos_sim(A, B):
     return dot(A, B) / (norm(A) * norm(B))
 
-def get_simularities_list(video: np.ndarray):
+def get_simularities_list(video: np.ndarray)->list[dict]:
 
     results = []
     prev_frame = None
@@ -121,42 +114,43 @@ def divide_takes(results: list, tot_duration: float, nb_frames: int, similarity:
 
     return groups
 
-def list_2_html(func):
+def capture_frames_4_each_group(video: np.ndarray, simularity_groups: list, target_dir: str)->dict:
 
-    def wrapper(input_file):
+    # 각 group 별 처음과 끝 frame을 image capture
+    min_frame_list = [ g['min_frame_number'] for g in simularity_groups ]
+    max_frame_list = [ g['max_frame_number'] for g in simularity_groups ]
+    frames_list = min_frame_list + max_frame_list
 
-        # mp4파일의 video를 ndarray 형식으로 변환
-        v_array, tot_duration, nb_frames = video_2_ndarray(input_file)
-        
-        # frame별로 이전 frame과의 유사성을 구하여 list를 return
-        simularities_list = get_simularities_list(v_array)
+    capture_map = {x: f'{target_dir}/capture_{str(x)}.png' for x in frames_list}
 
-        # 유사도가 0.9 이하인 지점을 기준으로 분할하여 frame들을 grouping
-        simularity_groups = divide_takes(simularities_list, tot_duration, nb_frames)
+    from PIL import Image
 
-        # 각 group 별 처음과 끝 frame을 image capture
-        min_frame_list = [ g['min_frame_number'] for g in simularity_groups ]
-        max_frame_list = [ g['max_frame_number'] for g in simularity_groups ]
-        frames_list = min_frame_list + max_frame_list
-
-        _capture_frames(v_array, frames_list)
-
-        # 유사도 기준 grouping list를 func 에 의해 가공
-        new_simularity_groups = func(simularity_groups)
-
-        # func 에 의해 가공된 list로 dataframe 생성 후 html 형식으로 출력
-        df = pd.DataFrame(new_simularity_groups)
-        html_table = df.to_html(index=False, escape=False)
-        
-        return html_table
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
     
-    return wrapper
-
-from PIL import Image
-
-def _capture_frames(video: np.ndarray, frames_list: list):
-
     for frame_number in frames_list:
-        Image.fromarray(video[frame_number]).save(f'./tmp/snapshot_{frame_number}.png')
-        
-    return True
+        Image.fromarray(video[frame_number]).save(capture_map[frame_number])
+
+    return capture_map
+
+def analyze_video(input_file:str, lower_similarity_limit:float=0.9,
+                   capture_dir:str='static')->list[dict]:
+    # mp4파일의 video를 ndarray 형식으로 변환
+    v_array, tot_duration, nb_frames = video_2_ndarray(input_file)
+
+    # frame별로 이전 frame과의 유사성을 구하여 list를 return
+    simularities_list = get_simularities_list(v_array)
+
+    # 유사도 limit 기준으로 frame들을 분할
+    simularity_groups = divide_takes(simularities_list, tot_duration, nb_frames,\
+                                          lower_similarity_limit)
+    
+    # 각 group 별 처음과 끝 frame을 image capture
+    capture_map = capture_frames_4_each_group(v_array, simularity_groups,\
+                                              target_dir=capture_dir)
+    _captures_added = [ {**s, 
+            'min_frame_path':capture_map[s['min_frame_number']],
+            'max_frame_path':capture_map[s['max_frame_number']]                        
+            } for s in simularity_groups ]
+
+    return _captures_added

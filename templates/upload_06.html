@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Video</title>
+</head>
+<body>
+    <h1>동영상을 업로드 하세요.</h1>
+    <form id="uploadForm" action="/api/v1/upload" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>    
+
+    <script>
+        // Redirect to /videos after successful upload
+        //document.getElementById('uploadForm').addEventListener = function() {
+        //    alert('File uploaded successfully!');
+        //    window.location.replace('/videos');
+            //return true;
+        //};
+        // Redirect to /videos after successful upload
+        document.getElementById('uploadForm').addEventListener('submit', function(event) {
+            alert('File uploaded successfully!');
+            window.location.href = '/videos';
+            event.preventDefault(); // 이벤트 기본 동작 중단
+        });
+    </script>
+</body>
+</html>

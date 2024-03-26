@@ -1,15 +1,13 @@
 """
 prompt:
 ===
-video table 정보를 모두 읽어서 html로 조회하는 code를 추가하라
+GET /api/v1/videos 에 video.id 값을 추가한다.
+videos.html 의 각 row의 맨 앞에 video.id 값을 보여준다.
+videos.html 의 각 row의 끝에 '분석 실행' 이라는 버튼을 추가한다
 
-조건 : 
-- html은 videos.html 파일이다.
-- html에 접근하는 url은 /videos 이다
-- video table 정보를 조회하는 REST API의 경로는 /api/v1/videos 이다.
-- videos.html에서 GET /api/v1/videos 을 호출한다.
-- videos.html 은 table 구조로 예쁘게 만들어라
-- file upload가 완료되면 /videos 로 redirect 되도록 해라.upload.html 만 수정하라.
+REST POST /api/v1/analyze 를 추가한다.
+이 버튼을 click 하면 POST /api/v1/analyze 를 호출한다.
+	- data 는 Video.id 하나이며 header가 아닌 body에 담는다.
 ===
 응답 모델 : ChatGPT-3.5
 """
@@ -53,7 +51,7 @@ def upload():
 
 @app.route("/videos")
 def video_list():
-    return render_template('videos_06.html')
+    return render_template('videos_07.html')
 
 # REST API
 class HomeAPI(Resource):
@@ -94,16 +92,29 @@ class VideoList(Resource):
         video_list = []
         for video in videos:
             video_list.append({
+                'id': video.id,
                 'file_name': video.file_name,
                 'file_extension': video.file_extension,
                 'file_size': video.file_size,
                 'created_at': video.created_at.strftime("%Y-%m-%d %H:%M:%S")
             })
         return video_list
-        
+
+class AnalyzeVideo(Resource):
+
+    def post(self):
+        data = request.get_json()
+        video_id = data.get('id')
+        # 여기에 비디오 분석 로직 추가
+        # video_id를 사용하여 특정 비디오 분석
+        # 예를 들어, 비디오 ID에 해당하는 파일을 찾아 분석을 시작할 수 있습니다.
+        # 이 예시에서는 단순히 ID를 받아서 성공적으로 분석 시작되었다고 가정하고 메시지만 반환합니다.
+        return {'message': f'Video analysis started for video ID: {video_id}'}
+            
 api.add_resource(HomeAPI, '/home')
 api.add_resource(FileUpload, '/upload')
 api.add_resource(VideoList, '/videos')
-
+api.add_resource(AnalyzeVideo, '/analyze')
+                 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

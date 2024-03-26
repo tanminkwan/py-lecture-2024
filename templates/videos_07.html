@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video List</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .analyze-btn {
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 3px;
+        }
+        .analyze-btn:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Video List</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>File Name</th>
+                <th>File Size</th>
+                <th>File Extension</th>
+                <th>Created At</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="video-list">
+            <!-- Video items will be added here -->
+        </tbody>
+    </table>
+
+    <script>
+        function analyzeVideo(id) {
+            fetch('/api/v1/analyze', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ id: id })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to analyze video');
+                }
+                alert('Video analysis started!');
+            })
+            .catch(error => console.error('Error analyzing video:', error));
+        }
+
+        fetch('/api/v1/videos')
+            .then(response => response.json())
+            .then(data => {
+                const videoList = document.getElementById('video-list');
+                data.forEach(video => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${video.id}</td>
+                        <td>${video.file_name}</td>
+                        <td>${video.file_size}</td>
+                        <td>${video.file_extension}</td>
+                        <td>${video.created_at}</td>
+                        <td><button class="analyze-btn" onclick="analyzeVideo(${video.id})">분석 실행</button></td>
+                    `;
+                    videoList.appendChild(row);
+                });
+            })
+            .catch(error => console.error('Error fetching videos:', error));
+    </script>
+</body>
+</html>
