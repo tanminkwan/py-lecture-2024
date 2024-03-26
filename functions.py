@@ -4,6 +4,40 @@ import numpy as np
 from numpy import dot
 from numpy.linalg import norm
 
+"""
+prompt : 
+===
+import ffmpeg
+import numpy as np
+        
+def video_2_ndarray(input_file: str)-> tuple: 
+    
+    #to-do
+    
+---
+위는 
+mp4 type의 video file이름을 input_file 으로 받아서 video data를 return
+하는 python code야.         
+parameters : 
+    input_file
+    - type : string
+return : 
+    video data
+    - type : numpy ndarray
+    - shape : (frame, height, width, RGB)
+    - dtype : uint8
+    전체 재생시간
+    - type : float
+    전체 frame 수
+    - type : integer
+
+사용할 library : ffmpeg, numpy
+사용하면 안되는 library : cv2, moviepy
+        
+to-do 영역을 완성해줘.
+===
+응답 모델 : ChatGPT-3.5
+"""
 def video_2_ndarray(input_file: str)-> tuple: 
     # Get video information
     probe = ffmpeg.probe(input_file)
@@ -31,13 +65,37 @@ def video_2_ndarray(input_file: str)-> tuple:
 
     return video, tot_duration, nb_frames
 
+"""
+prompt : 
+===
+import ffmpeg
+import numpy as np
+        
+def ndarray_2_video(video: np.ndarray, output_file: str)-> None:
+    #to-do
+---
+위는 
+numpy array type의 video data(video)를 mp4 type의 video file(output_file)로 변환
+하는 python code야.
+
+input parameter : 
+    - video : 함수 mp4_2_ndarray 의 return 값
+    - output_file : 출력할 video 파일이름
+return : 없음
+
+mp4 file을 만들 때 함수 ffmpeg.input 를 사용해.
+사용할 library : ffmpeg, numpy
+사용하면 안되는 library : cv2, moviepy
+사용하면 안되는 function : VideoWriter
+
+to-do 영역을 완성해줘.
+===
+응답 모델 : ChatGPT-3.5
+"""
 def ndarray_2_video(video_new: np.ndarray, output_file: str)-> None:
 
     new_width = video_new.shape[2]
     new_height = video_new.shape[1]
-
-    # Path to output video file
-    #output_file = 'output_' + input_file
 
     # Define ffmpeg output
     ffmpeg_output = (
@@ -62,7 +120,7 @@ def ndarray_2_video(video_new: np.ndarray, output_file: str)-> None:
 def _cos_sim(A, B):
     return dot(A, B) / (norm(A) * norm(B))
 
-def get_simularities_list(video: np.ndarray)->list[dict]:
+def get_simularities_list(video: np.ndarray)->list:
 
     results = []
     prev_frame = None
@@ -134,7 +192,7 @@ def capture_frames_4_each_group(video: np.ndarray, simularity_groups: list, targ
     return capture_map
 
 def analyze_video(input_file:str, lower_similarity_limit:float=0.9,
-                   capture_dir:str='static')->list[dict]:
+                   capture_dir:str='static')->list:
     # mp4파일의 video를 ndarray 형식으로 변환
     v_array, tot_duration, nb_frames = video_2_ndarray(input_file)
 

@@ -56,12 +56,6 @@ def video_list():
     return render_template('videos_06.html')
 
 # REST API
-class HomeAPI(Resource):
-
-    def get(self):
-        message = "동영상을 분석해 드립니다."
-        return {'result': message}, 200
-
 class FileUpload(Resource):
     
     def post(self):
@@ -101,7 +95,6 @@ class VideoList(Resource):
             })
         return video_list
         
-api.add_resource(HomeAPI, '/home')
 api.add_resource(FileUpload, '/upload')
 api.add_resource(VideoList, '/videos')
 

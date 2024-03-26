@@ -101,12 +101,6 @@ def video_list():
     return render_template('videos_07.html')
 
 # REST API
-class HomeAPI(Resource):
-
-    def get(self):
-        message = "동영상을 분석해 드립니다."
-        return {'result': message}, 200
-
 class FileUpload(Resource):
     
     def post(self):
@@ -167,9 +161,9 @@ class AnalyzeVideo(Resource):
             video_split = VideoSplit(
                 video_id=video_id,
                 group_number=group['group_number'],
-                min_frame_number=group['min_frame_number'],
-                max_frame_number=group['max_frame_number'],
-                frame_count=group['frame_count'],
+                min_frame_number=int(group['min_frame_number']),
+                max_frame_number=int(group['max_frame_number']),
+                frame_count=int(group['frame_count']),
                 start=group['start'],
                 duration=group['duration'],
                 min_similarity=group['min_similarity'],
@@ -182,7 +176,6 @@ class AnalyzeVideo(Resource):
 
         return {'message': 'Video analysis completed and saved for video ID: {}'.format(video_id)}
             
-api.add_resource(HomeAPI, '/home')
 api.add_resource(FileUpload, '/upload')
 api.add_resource(VideoList, '/videos')
 api.add_resource(AnalyzeVideo, '/analyze')

@@ -13,17 +13,36 @@
     </form>    
 
     <script>
-        // Redirect to /videos after successful upload
-        //document.getElementById('uploadForm').addEventListener = function() {
-        //    alert('File uploaded successfully!');
-        //    window.location.replace('/videos');
-            //return true;
-        //};
-        // Redirect to /videos after successful upload
+        // Form이 제출되면 이벤트 리스너를 사용하여 다른 URL로 리다이렉트합니다.
         document.getElementById('uploadForm').addEventListener('submit', function(event) {
-            alert('File uploaded successfully!');
-            window.location.href = '/videos';
-            event.preventDefault(); // 이벤트 기본 동작 중단
+            event.preventDefault(); // 기본 제출 동작을 막습니다.
+
+            // 폼 데이터를 가져옵니다.
+            let formData = new FormData(this);
+
+            // POST 요청을 보낼 URL을 지정합니다.
+            let postUrl = this.getAttribute('action');
+
+            // POST 요청을 보냅니다.
+            fetch(postUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => {
+                alert('File uploaded successfully!');
+                
+                if (response.ok) {
+                // 리다이렉트할 URL을 지정합니다.
+                let redirectUrl = '/videos';
+                window.location.href = redirectUrl; // 리다이렉트합니다.
+                } else {
+                // 오류 처리를 수행합니다.
+                console.error('POST 요청이 실패했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('네트워크 오류:', error);
+            });
         });
     </script>
 </body>

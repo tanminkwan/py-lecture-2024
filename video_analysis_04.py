@@ -31,15 +31,9 @@ api = Api(app, prefix="/api/v1")
 
 @app.route("/upload")
 def upload():
-    return render_template('upload.html')
+    return render_template('upload_04.html')
 
 # REST API
-class HomeAPI(Resource):
-
-    def get(self):
-        message = "동영상을 분석해 드립니다."
-        return {'result': message}, 200
-
 class FileUpload(Resource):
     
     def post(self):
@@ -54,7 +48,6 @@ class FileUpload(Resource):
         file.save(filename)
         return {'message': 'File uploaded successfully', 'filename': filename}, 201
     
-api.add_resource(HomeAPI, '/home', endpoint='home')
 api.add_resource(FileUpload, '/upload')
 
 if __name__ == "__main__":

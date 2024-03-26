@@ -13,7 +13,7 @@ class HomeAPI(Resource):
         message = "동영상을 분석해 드립니다."
         return {'result': message}, 200
 
-api.add_resource(HomeAPI, '/home', endpoint='home')
+api.add_resource(HomeAPI, '/home')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

@@ -54,12 +54,6 @@ def video_list():
     return render_template('videos_07.html')
 
 # REST API
-class HomeAPI(Resource):
-
-    def get(self):
-        message = "동영상을 분석해 드립니다."
-        return {'result': message}, 200
-
 class FileUpload(Resource):
     
     def post(self):
@@ -111,7 +105,6 @@ class AnalyzeVideo(Resource):
         # 이 예시에서는 단순히 ID를 받아서 성공적으로 분석 시작되었다고 가정하고 메시지만 반환합니다.
         return {'message': f'Video analysis started for video ID: {video_id}'}
             
-api.add_resource(HomeAPI, '/home')
 api.add_resource(FileUpload, '/upload')
 api.add_resource(VideoList, '/videos')
 api.add_resource(AnalyzeVideo, '/analyze')
