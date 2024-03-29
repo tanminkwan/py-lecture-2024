@@ -80,7 +80,7 @@ class FileUpload(Resource):
         db.session.commit()
 
         return {'message': 'File uploaded successfully', 'filename': filename}, 201
-    
+
 api.add_resource(FileUpload, '/upload')
 
 if __name__ == "__main__":

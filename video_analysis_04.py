@@ -47,7 +47,7 @@ class FileUpload(Resource):
         filename = os.path.join(UPLOAD_FOLDER, file.filename)
         file.save(filename)
         return {'message': 'File uploaded successfully', 'filename': filename}, 201
-    
+
 api.add_resource(FileUpload, '/upload')
 
 if __name__ == "__main__":

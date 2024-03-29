@@ -76,14 +76,17 @@ class VideoSplit(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     video_id = db.Column(db.Integer, db.ForeignKey('video.id'), nullable=False)
     group_number = db.Column(db.Integer, nullable=False)
-    min_frame_number = db.Column(db.Integer, nullable=False)
-    max_frame_number = db.Column(db.Integer, nullable=False)
-    frame_count = db.Column(db.Integer, nullable=False)
-    start = db.Column(db.Float, nullable=False)
-    duration = db.Column(db.Float, nullable=False)
-    min_similarity = db.Column(db.Float, nullable=False)
-    min_frame_path = db.Column(db.String(255), nullable=False)
-    max_frame_path = db.Column(db.String(255), nullable=False)
+    min_frame_number = db.Column(db.Integer)
+    max_frame_number = db.Column(db.Integer)
+    frame_count = db.Column(db.Integer)
+    start = db.Column(db.Float)
+    duration = db.Column(db.Float)
+    min_similarity = db.Column(db.Float)
+    min_frame_path = db.Column(db.String(255))
+    max_frame_path = db.Column(db.String(255))
+
+    def __repr__(self):
+        return f"<VideoSplit {self.id}>"
 
 # 아래 line은 LLM이 잘못 알려줘 수정함
 # LLM : 
@@ -175,7 +178,7 @@ class AnalyzeVideo(Resource):
         db.session.commit()
 
         return {'message': 'Video analysis completed and saved for video ID: {}'.format(video_id)}
-            
+
 api.add_resource(FileUpload, '/upload')
 api.add_resource(VideoList, '/videos')
 api.add_resource(AnalyzeVideo, '/analyze')

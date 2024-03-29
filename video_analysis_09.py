@@ -127,7 +127,6 @@ class AnalyzeVideo(Resource):
 
         # 비디오 분석 결과를 VideoSplit 테이블에 저장
         for group in simularity_groups:
-            
             video_split = VideoSplit(
                 video_id=video_id,
                 group_number=group['group_number'],
@@ -169,7 +168,7 @@ class VideoDetails(Resource):
             })
         
         return video_details_list
-                
+
 api.add_resource(FileUpload, '/upload')
 api.add_resource(VideoList, '/videos')
 api.add_resource(AnalyzeVideo, '/analyze')

@@ -94,7 +94,7 @@ class VideoList(Resource):
                 'created_at': video.created_at.strftime("%Y-%m-%d %H:%M:%S")
             })
         return video_list
-        
+
 api.add_resource(FileUpload, '/upload')
 api.add_resource(VideoList, '/videos')
 

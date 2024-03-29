@@ -103,11 +103,11 @@ class AnalyzeVideo(Resource):
         # video_id를 사용하여 특정 비디오 분석
         # 예를 들어, 비디오 ID에 해당하는 파일을 찾아 분석을 시작할 수 있습니다.
         # 이 예시에서는 단순히 ID를 받아서 성공적으로 분석 시작되었다고 가정하고 메시지만 반환합니다.
-        return {'message': f'Video analysis started for video ID: {video_id}'}
-            
+        return {'message': 'Video analysis completed and saved for video ID: {}'.format(video_id)}
+
 api.add_resource(FileUpload, '/upload')
 api.add_resource(VideoList, '/videos')
 api.add_resource(AnalyzeVideo, '/analyze')
-                 
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
