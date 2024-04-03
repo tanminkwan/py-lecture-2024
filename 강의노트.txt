@@ -20,7 +20,7 @@ Python 문법
 :PEP 8, PEP 20
 
 
-"English is the hottest new programming language" - Andrej Karpathy (previously Director of AI at Tesla, OpenAI)
+"The hottest new programming language is English" - Andrej Karpathy (previously Director of AI at Tesla, OpenAI)
 
 ---
 AI Pro : 

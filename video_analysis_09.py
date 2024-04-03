@@ -4,7 +4,7 @@ prompt:
 * video.html 의 각 row 맨앞에 "상세보기" 버튼을 추가한다.
 * 버튼을 누르면 REST GET /api/v1/detail/<video.id> 가 호출된다.
 - 받을 정보는 해당 row 밑에 작은 글씨로 table 구조로 보여준다.
-- start, duration, min_similarity 값은 소수 둘째자리에서 반올림한다.
+- start, duration, dynamic_intensity, min_similarity 값은 소수 둘째자리에서 반올림한다.
 
 * GET /api/v1/detail/<video.id> 은 video.id에 해당하는 video_split table의 정보를 조회한다.
 ===
@@ -47,6 +47,7 @@ class VideoSplit(db.Model):
     frame_count = db.Column(db.Integer)
     start = db.Column(db.Float)
     duration = db.Column(db.Float)
+    dynamic_intensity = db.Column(db.Float)
     min_similarity = db.Column(db.Float)
     min_frame_path = db.Column(db.String(255))
     max_frame_path = db.Column(db.String(255))
@@ -135,6 +136,7 @@ class AnalyzeVideo(Resource):
                 frame_count=int(group['frame_count']),
                 start=group['start'],
                 duration=group['duration'],
+                dynamic_intensity=group['dynamic_intensity'],
                 min_similarity=group['min_similarity'],
                 min_frame_path=group['min_frame_path'],
                 max_frame_path=group['max_frame_path']
@@ -153,6 +155,7 @@ class VideoDetails(Resource):
 
             start_rounded = round(detail.start, 2)  # 소수 둘째 자리에서 반올림
             duration_rounded = round(detail.duration, 2)  # 소수 둘째 자리에서 반올림
+            dynamic_intensity_rounded = round(detail.dynamic_intensity, 2)  # 소수 둘째 자리에서 반올림
             min_similarity_rounded = round(detail.min_similarity, 2)  # 소수 둘째 자리에서 반올림
 
             video_details_list.append({
@@ -162,6 +165,7 @@ class VideoDetails(Resource):
                 'frame_count': detail.frame_count,
                 'start': start_rounded,
                 'duration': duration_rounded,
+                'dynamic_intensity': dynamic_intensity_rounded,
                 'min_similarity': min_similarity_rounded,
                 'min_frame_path': detail.min_frame_path,
                 'max_frame_path': detail.max_frame_path
