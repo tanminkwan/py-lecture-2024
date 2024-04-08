@@ -7,7 +7,9 @@ video table 정보를 모두 읽어서 html로 조회하는 code를 추가하라
 - html은 videos.html 파일이다.
 - html에 접근하는 url은 /videos 이다
 - video table 정보를 조회하는 REST API의 경로는 /api/v1/videos 이다.
+  video.id 값도 조회된다.
 - videos.html에서 GET /api/v1/videos 을 호출한다.
+  각 row의 맨 앞에 video.id 값을 보여준다.
 - videos.html 은 table 구조로 예쁘게 만들어라
 - file upload가 완료되면 /videos 로 redirect 되도록 해라.upload.html 만 수정하라.
 ===
@@ -88,6 +90,7 @@ class VideoList(Resource):
         video_list = []
         for video in videos:
             video_list.append({
+                'id': video.id,
                 'file_name': video.file_name,
                 'file_extension': video.file_extension,
                 'file_size': video.file_size,
@@ -95,7 +98,7 @@ class VideoList(Resource):
             })
         return video_list
 
-api.add_resource(FileUpload, '/upload')
+api.add_resource(FileUpload, '/file')
 api.add_resource(VideoList, '/videos')
 
 if __name__ == "__main__":

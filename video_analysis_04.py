@@ -13,7 +13,7 @@ file upload 화면 html 도 만들어라.
 다음 조건을 만족한다.
 ---
 - upload folder 는 './upload' 이다
-- REST API 경로는 /api/v1/upload 이다
+- REST API 경로는 /api/v1/file 이다
 ===
 응답 모델 : ChatGPT-3.5
 """
@@ -48,7 +48,7 @@ class FileUpload(Resource):
         file.save(filename)
         return {'message': 'File uploaded successfully', 'filename': filename}, 201
 
-api.add_resource(FileUpload, '/upload')
+api.add_resource(FileUpload, '/file')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

@@ -51,18 +51,17 @@
 
     <script>
         function analyzeVideo(id) {
-            fetch('/api/v1/analyze', {
+            fetch(`/api/v1/video_details/${id}`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ id: id })
+                }
             })
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to analyze video');
                 }
-                alert('Video analysis started!');
+                alert('Video analysis finished!');
             })
             .catch(error => console.error('Error analyzing video:', error));
         }

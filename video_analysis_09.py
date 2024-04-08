@@ -2,11 +2,11 @@
 prompt:
 ===
 * video.html 의 각 row 맨앞에 "상세보기" 버튼을 추가한다.
-* 버튼을 누르면 REST GET /api/v1/detail/<video.id> 가 호출된다.
+* 버튼을 누르면 REST GET /api/v1/video_details/<video.id> 가 호출된다.
 - 받을 정보는 해당 row 밑에 작은 글씨로 table 구조로 보여준다.
 - start, duration, dynamic_intensity, min_similarity 값은 소수 둘째자리에서 반올림한다.
 
-* GET /api/v1/detail/<video.id> 은 video.id에 해당하는 video_split table의 정보를 조회한다.
+* GET /api/v1/video_details/<video.id> 은 video.id에 해당하는 video_split table의 정보를 조회한다.
 ===
 응답 모델 : ChatGPT-3.5
 """
@@ -111,11 +111,9 @@ class VideoList(Resource):
             })
         return video_list
 
-class AnalyzeVideo(Resource):
+class VideoDetails(Resource):
 
-    def post(self):
-        data = request.get_json()
-        video_id = data.get('id')
+    def post(self, video_id):
         # 여기에 비디오 분석 로직 추가
         # video_id로 video table에서 file_name을 읽음
         video = Video.query.get(video_id)
@@ -145,9 +143,8 @@ class AnalyzeVideo(Resource):
 
         db.session.commit()
 
-        return {'message': 'Video analysis completed and saved for video ID: {}'.format(video_id)}
+        return {'message': f'Video analysis completed and saved for video ID: {video_id}'}
 
-class VideoDetails(Resource):
     def get(self, video_id):
         video_details = VideoSplit.query.filter_by(video_id=video_id).all()
         video_details_list = []
@@ -173,10 +170,9 @@ class VideoDetails(Resource):
         
         return video_details_list
 
-api.add_resource(FileUpload, '/upload')
+api.add_resource(FileUpload, '/file')
 api.add_resource(VideoList, '/videos')
-api.add_resource(AnalyzeVideo, '/analyze')
-api.add_resource(VideoDetails, '/detail/<int:video_id>')
+api.add_resource(VideoDetails, '/video_details/<int:video_id>')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

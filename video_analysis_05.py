@@ -81,7 +81,7 @@ class FileUpload(Resource):
 
         return {'message': 'File uploaded successfully', 'filename': filename}, 201
 
-api.add_resource(FileUpload, '/upload')
+api.add_resource(FileUpload, '/file')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

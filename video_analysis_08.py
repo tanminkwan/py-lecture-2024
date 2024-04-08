@@ -35,7 +35,7 @@ simularity_groups = \
 - column들은 위의 simularity_groups 의 항목들과 일치
 - Video class의 id를 foreign key로 가짐
 
-3. AnalyzeVideo.post 함수에 아래 조건을 만족하는 code 추가하라
+3. VideoDetails.post 함수에 아래 조건을 만족하는 code 추가하라
 
 조건:
 - video_id 로 video table에서 file_name 을 읽는다
@@ -147,11 +147,9 @@ class VideoList(Resource):
             })
         return video_list
 
-class AnalyzeVideo(Resource):
+class VideoDetails(Resource):
 
-    def post(self):
-        data = request.get_json()
-        video_id = data.get('id')
+    def post(self, video_id):
         # 여기에 비디오 분석 로직 추가
         # video_id로 video table에서 file_name을 읽음
         video = Video.query.get(video_id)
@@ -181,11 +179,11 @@ class AnalyzeVideo(Resource):
 
         db.session.commit()
 
-        return {'message': 'Video analysis completed and saved for video ID: {}'.format(video_id)}
+        return {'message': f'Video analysis completed and saved for video ID: {video_id}'}
 
-api.add_resource(FileUpload, '/upload')
+api.add_resource(FileUpload, '/file')
 api.add_resource(VideoList, '/videos')
-api.add_resource(AnalyzeVideo, '/analyze')
+api.add_resource(VideoDetails, '/video_details/<int:video_id>')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

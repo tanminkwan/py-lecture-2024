@@ -1,13 +1,11 @@
 """
 prompt:
 ===
-GET /api/v1/videos 에 video.id 값을 추가한다.
-videos.html 의 각 row의 맨 앞에 video.id 값을 보여준다.
 videos.html 의 각 row의 끝에 '분석 실행' 이라는 버튼을 추가한다
 
 REST POST /api/v1/analyze 를 추가한다.
-이 버튼을 click 하면 POST /api/v1/analyze 를 호출한다.
-	- data 는 Video.id 하나이며 header가 아닌 body에 담는다.
+이 버튼을 click 하면 POST /api/v1/video_details/<int:video_id> 를 호출한다.
+	- data 는 null이므로 body는 보내지 않는다.
 ===
 응답 모델 : ChatGPT-3.5
 """
@@ -94,20 +92,18 @@ class VideoList(Resource):
             })
         return video_list
 
-class AnalyzeVideo(Resource):
+class VideoDetails(Resource):
 
-    def post(self):
-        data = request.get_json()
-        video_id = data.get('id')
+    def post(self, video_id):
         # 여기에 비디오 분석 로직 추가
         # video_id를 사용하여 특정 비디오 분석
         # 예를 들어, 비디오 ID에 해당하는 파일을 찾아 분석을 시작할 수 있습니다.
         # 이 예시에서는 단순히 ID를 받아서 성공적으로 분석 시작되었다고 가정하고 메시지만 반환합니다.
-        return {'message': 'Video analysis completed and saved for video ID: {}'.format(video_id)}
+        return {'message': f'Video analysis completed and saved for video ID: {video_id}'}
 
-api.add_resource(FileUpload, '/upload')
+api.add_resource(FileUpload, '/file')
 api.add_resource(VideoList, '/videos')
-api.add_resource(AnalyzeVideo, '/analyze')
+api.add_resource(VideoDetails, '/video_details/<int:video_id>')
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

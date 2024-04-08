@@ -25,6 +25,7 @@
     <table>
         <thead>
             <tr>
+                <th>ID</th>
                 <th>File Name</th>
                 <th>File Size</th>
                 <th>File Extension</th>
@@ -44,6 +45,7 @@
                 data.forEach(video => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
+                        <td>${video.id}</td>
                         <td>${video.file_name}</td>
                         <td>${video.file_size}</td>
                         <td>${video.file_extension}</td>
