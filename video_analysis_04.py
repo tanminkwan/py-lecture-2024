@@ -7,7 +7,7 @@ from flask_restful import Api, Resource
 app = Flask(import_name=__name__)
 api = Api(app, prefix="/api/v1")
 
-위 code를 사용하여를 사용해서
+위 code를 사용하여
 REST API로 file upload python code를 짜라.
 file upload 화면 html 도 만들어라.
 다음 조건을 만족한다.

@@ -177,6 +177,6 @@ api.add_resource(FileUpload, '/upload')
 api.add_resource(VideoList, '/videos')
 api.add_resource(AnalyzeVideo, '/analyze')
 api.add_resource(VideoDetails, '/detail/<int:video_id>')
-                 
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)
