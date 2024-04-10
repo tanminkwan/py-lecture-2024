@@ -67,7 +67,7 @@ app.run(host="0.0.0.0", port=5000, debug=True)
 
 ## 디렉토리 구조
 ```bash
-/flask-app-root
+/my-flask
     /static
         capture_1.png
     /templates
