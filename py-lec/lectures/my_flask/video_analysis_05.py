@@ -44,10 +44,6 @@ class Video(db.Model):
     def __repr__(self):
         return f"<Video {self.id}>"
 
-# 아래 line은 LLM이 잘못 알려줘 수정함
-# LLM : 
-#db.create_all()
-# 변경 : 
 with app.app_context():
     db.create_all()
 

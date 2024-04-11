@@ -156,7 +156,7 @@ def divide_takes(results: list, tot_duration: float, nb_frames: int, similarity:
         max_frame_number = group_df['frame_number'].max()
         min_similarity = group_df['similarity'].min()
 
-        dynamic_intensity = 1 - group_df[group_df['similarity'] >\
+        activity_intensity = 1 - group_df[group_df['similarity'] >\
                                 min_similarity]['similarity'].mean()**20
 
         frame_count = max_frame_number - min_frame_number + 1
@@ -170,7 +170,7 @@ def divide_takes(results: list, tot_duration: float, nb_frames: int, similarity:
             'frame_count' : frame_count,
             'start' : start,
             'duration' : duration,
-            'dynamic_intensity' : dynamic_intensity,
+            'activity_intensity' : activity_intensity,
             'min_similarity': min_similarity
         })
 

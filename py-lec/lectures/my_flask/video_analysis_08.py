@@ -12,7 +12,7 @@ simularity_groups = \
         'frame_count': 30, 
         'start': 0.05, 
         'duration': 1.5, 
-        'dynamic_intensity': 0.0011207513559413,
+        'activity_intensity': 0.0011207513559413,
         'min_similarity': 0.9771207513559413, 
         'min_frame_path': 'tmp/capture_1.png', 
         'max_frame_path': 'tmp/capture_30.png'
@@ -24,7 +24,7 @@ simularity_groups = \
         'frame_count': 153, 
         'start': 1.55, 
         'duration': 7.65, 
-        'dynamic_intensity': 0.1271207513559413,
+        'activity_intensity': 0.1271207513559413,
         'min_similarity': 0.8046356748819421, 
         'min_frame_path': 'tmp/capture_31.png', 
         'max_frame_path': 'tmp/capture_183.png'}
@@ -83,7 +83,7 @@ class VideoSplit(db.Model):
     frame_count = db.Column(db.Integer)
     start = db.Column(db.Float)
     duration = db.Column(db.Float)
-    dynamic_intensity = db.Column(db.Float)
+    activity_intensity = db.Column(db.Float)
     min_similarity = db.Column(db.Float)
     min_frame_path = db.Column(db.String(255))
     max_frame_path = db.Column(db.String(255))
@@ -91,10 +91,6 @@ class VideoSplit(db.Model):
     def __repr__(self):
         return f"<VideoSplit {self.id}>"
 
-# 아래 line은 LLM이 잘못 알려줘 수정함
-# LLM : 
-#db.create_all()
-# 변경 : 
 with app.app_context():
     db.create_all()
 
@@ -156,7 +152,7 @@ class VideoDetails(Resource):
         if video is None:
             return {'error': 'Video not found'}, 404
 
-        # file_path로 비디오 분석
+        # 비디오 분석
         file_path = os.path.join(UPLOAD_FOLDER, video.file_name)
         simularity_groups = analyze_video(file_path)
 
@@ -170,7 +166,7 @@ class VideoDetails(Resource):
                 frame_count=int(group['frame_count']),
                 start=group['start'],
                 duration=group['duration'],
-                dynamic_intensity=group['dynamic_intensity'],
+                activity_intensity=group['activity_intensity'],
                 min_similarity=group['min_similarity'],
                 min_frame_path=group['min_frame_path'],
                 max_frame_path=group['max_frame_path']
