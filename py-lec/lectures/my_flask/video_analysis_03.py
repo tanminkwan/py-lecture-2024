@@ -13,6 +13,10 @@ class HomeAPI(Resource):
         message = f'{username}님 환영합니다.'
         return {'result': message}, 200
 
+    def put(self, username):
+        # do something
+        return {'username': username}, 200
+    
 api.add_resource(HomeAPI, '/home/<string:username>')
 
 if __name__ == "__main__":
