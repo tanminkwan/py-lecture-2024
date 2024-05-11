@@ -3,7 +3,7 @@ my_flask/video_analysis.py에 기능들을 하나씩 추가하고 OS prompt(wind
 
 ## STEP 1. mp4 파일 upload 하기
 - 사용자가 웹 페이지를 통해 파일을 업로드하고, 서버가 이를 처리하여 지정된 폴더에 저장하는 기능을 구현합니다.
-- 참고 파일 : my_flask/video_analysis_04.py
+- 참고 파일 : my_flask/video_analysis_09.py
 ### 1. 추가된 Code
 ```python
 # 추가 : 필요한 모듈 가져오기
