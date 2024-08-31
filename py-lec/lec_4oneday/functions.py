@@ -5,6 +5,120 @@ from numpy import dot
 from numpy.linalg import norm
 
 """
+2차원 list를 1차원(벡터) list로 변환하는 함수
+"""
+def two2one(twod: list) -> list:
+    oned = []
+    for sublist in twod:
+        oned.extend(sublist)
+    return oned
+"""
+2차원 list의 각 item에 특정 숫자(float)를 곱하는 함수
+"""
+def list_mul_scalar(twod: list, scalar: float) -> list:
+    return [[x * scalar for x in sublist] for sublist in twod]
+
+"""
+prompt : 
+===
+3X3 list를 argumnet로 받아
+matplot을 이용해 
+3x3 정사각형 도형을 그려
+가운데 숫자를 넣어
+-9 ~ -1 은 청색으로 -9가 가장진하게 0은 하얀색  1 ~ 9 는 녹색으로 표시
+위를 만족하는 함수 짜줘
+"""
+import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
+
+def visualize_ndlist(ndlist, vmin=-9, vmax=9):
+    # 1차원 리스트를 2차원 리스트로 변환 (한 줄로)
+    if isinstance(ndlist[0], list):
+        data = np.array(ndlist)  # 이미 2차원 리스트인 경우
+    else:
+        data = np.array([ndlist])  # 1차원 리스트인 경우, 2차원으로 변환
+
+    # 사용자 정의 색상맵 설정
+    cmap = mcolors.LinearSegmentedColormap.from_list(
+        'custom_cmap', 
+        ['blue', 'white', 'green'], 
+        N=19  # -9 to 9 range
+    )
+
+    # 값의 범위를 -9부터 9까지로 설정
+    norm = mcolors.Normalize(vmin=vmin, vmax=vmax)
+
+    # 크기를 1/4로 줄여서 출력
+    if isinstance(ndlist[0], list):
+        plt.figure(figsize=(2, 2))
+    else:
+        pass
+
+    # 색상맵을 적용하여 데이터 시각화
+    plt.imshow(data, cmap=cmap, norm=norm, interpolation='none')
+
+    # 각 셀에 숫자 넣기
+    for i in range(data.shape[0]):
+        for j in range(data.shape[1]):
+            # 값이 정수인 경우와 소수인 경우 다르게 처리
+            if isinstance(data[i, j], float):
+                text = f"{data[i, j]:.2f}"  # 소수점 두 자리까지 출력
+            else:
+                text = str(data[i, j])  # 정수일 경우 그대로 출력
+            plt.text(j, i, text, ha='center', va='center', color='black')
+
+    # 축 숨기기
+    plt.axis('off')
+
+    # 그래프 출력
+    plt.show()
+
+"""
+prompt : 
+===
+visualize_ndlist code를 활용해
+argument 두개를 받고 두개의 그림을 좌우로 배치해줘
+"""
+def visualize_ndlists_side_by_side(ndlist1, ndlist2):
+    # 두 리스트를 넘파이 배열로 변환
+    data1 = np.array(ndlist1)
+    data2 = np.array(ndlist2)
+
+    # 사용자 정의 색상맵 설정
+    cmap = mcolors.LinearSegmentedColormap.from_list(
+        'custom_cmap', 
+        ['blue', 'white', 'green'], 
+        N=19  # -9 to 9 range
+    )
+
+    # 값의 범위를 -9부터 9까지로 설정
+    norm = mcolors.Normalize(vmin=-9, vmax=9)
+
+    # 두 개의 서브플롯을 생성하여 좌우로 배치
+    fig, axes = plt.subplots(1, 2, figsize=(5, 2))
+
+    # 첫 번째 리스트 시각화
+    axes[0].imshow(data1, cmap=cmap, norm=norm, interpolation='none')
+    for i in range(data1.shape[0]):
+        for j in range(data1.shape[1]):
+            axes[0].text(j, i, str(data1[i, j]), ha='center', va='center', color='black')
+    axes[0].axis('off')
+
+    # 두 번째 리스트 시각화
+    axes[1].imshow(data2, cmap=cmap, norm=norm, interpolation='none')
+    for i in range(data2.shape[0]):
+        for j in range(data2.shape[1]):
+            axes[1].text(j, i, str(data2[i, j]), ha='center', va='center', color='black')
+    axes[1].axis('off')
+
+    # 그래프 출력
+    plt.show()
+
+# 함수 호출 예시
+ndlist1 = [[-9, -4, 0], [1, 5, 9], [-8, -2, 3]]
+visualize_ndlist(ndlist1)
+
+"""
 prompt : 
 ===
 import ffmpeg
