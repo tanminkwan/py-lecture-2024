@@ -114,10 +114,6 @@ def visualize_ndlists_side_by_side(ndlist1, ndlist2):
     # 그래프 출력
     plt.show()
 
-# 함수 호출 예시
-ndlist1 = [[-9, -4, 0], [1, 5, 9], [-8, -2, 3]]
-visualize_ndlist(ndlist1)
-
 """
 prompt : 
 ===
