@@ -1,5 +1,5 @@
 NumPy, pandas, matplotlib을 **비정형 데이터를 정형화**하고 **분석하며 시각화**하는 관점에서 소개합니다.
-
+- ![Alt text for broken image link](../resources/numpy.pandas.matplot.png)
 ---
 
 ### 1. **NumPy**: 비정형 데이터 가공과 처리
