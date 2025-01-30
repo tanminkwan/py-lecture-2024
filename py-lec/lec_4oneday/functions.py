@@ -76,43 +76,51 @@ def visualize_ndlist(ndlist, vmin=-9, vmax=9):
 """
 prompt : 
 ===
-visualize_ndlist code를 활용해
-argument 두개를 받고 두개의 그림을 좌우로 배치해줘
-"""
-def visualize_ndlists_side_by_side(ndlist1, ndlist2):
-    # 두 리스트를 넘파이 배열로 변환
-    data1 = np.array(ndlist1)
-    data2 = np.array(ndlist2)
+visualize_ndlist code를 활용해서
+3X3 2차원 list를 여러개 받아 한 줄에 num_on_a_row 개수만큼 시각화를 배치해주는 함수를 만들어줘.
 
+parameters :
+    ndlist_array : 3X3 2차원 list의 list
+    num_on_a_row : 한 줄에 배치할 개수
+"""
+def visualize_ndlists_side_by_side(ndlist_array, vmin=-9, vmax=9, num_on_a_row=1):
     # 사용자 정의 색상맵 설정
     cmap = mcolors.LinearSegmentedColormap.from_list(
         'custom_cmap', 
         ['blue', 'white', 'green'], 
         N=19  # -9 to 9 range
     )
+    norm = mcolors.Normalize(vmin=vmin, vmax=vmax)
 
-    # 값의 범위를 -9부터 9까지로 설정
-    norm = mcolors.Normalize(vmin=-9, vmax=9)
+    # 총 리스트 개수 및 행, 열 계산
+    total_items = len(ndlist_array)
+    num_rows = (total_items + num_on_a_row - 1) // num_on_a_row
 
-    # 두 개의 서브플롯을 생성하여 좌우로 배치
-    fig, axes = plt.subplots(1, 2, figsize=(5, 2))
+    # 서브플롯 생성
+    fig, axes = plt.subplots(num_rows, num_on_a_row, figsize=(5 * num_on_a_row, 3 * num_rows))
+    axes = np.array(axes).reshape(-1)  # 1차원 배열로 평탄화
 
-    # 첫 번째 리스트 시각화
-    axes[0].imshow(data1, cmap=cmap, norm=norm, interpolation='none')
-    for i in range(data1.shape[0]):
-        for j in range(data1.shape[1]):
-            axes[0].text(j, i, str(data1[i, j]), ha='center', va='center', color='black')
-    axes[0].axis('off')
+    for idx, ndlist in enumerate(ndlist_array):
+        # 배열 변환
+        data = np.array(ndlist)
 
-    # 두 번째 리스트 시각화
-    axes[1].imshow(data2, cmap=cmap, norm=norm, interpolation='none')
-    for i in range(data2.shape[0]):
-        for j in range(data2.shape[1]):
-            axes[1].text(j, i, str(data2[i, j]), ha='center', va='center', color='black')
-    axes[1].axis('off')
+        # 시각화 처리
+        axes[idx].imshow(data, cmap=cmap, norm=norm, interpolation='none')
+        for i in range(data.shape[0]):
+            for j in range(data.shape[1]):
+                axes[idx].text(j, i, str(data[i, j]), ha='center', va='center', color='black')
+        
+        # 제목 추가 및 축 제거
+        axes[idx].axis('off')
+
+    # 남아 있는 빈 플롯 제거
+    for ax in axes[len(ndlist_array):]:
+        ax.axis('off')
 
     # 그래프 출력
+    plt.tight_layout()
     plt.show()
+
 
 """
 prompt : 
