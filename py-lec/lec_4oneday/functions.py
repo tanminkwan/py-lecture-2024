@@ -7,15 +7,13 @@ from numpy.linalg import norm
 """
 2차원 list를 1차원(벡터) list로 변환하는 함수
 """
-def two2one(twod: list) -> list:
-    oned = []
-    for sublist in twod:
-        oned.extend(sublist)
-    return oned
+def flatten(twod: list) -> list:
+    return [item for sublist in twod for item in sublist]
+
 """
 2차원 list의 각 item에 특정 숫자(float)를 곱하는 함수
 """
-def list_mul_scalar(twod: list, scalar: float) -> list:
+def scale_matrix(twod: list, scalar: float) -> list:
     return [[x * scalar for x in sublist] for sublist in twod]
 
 """
@@ -76,14 +74,81 @@ def visualize_ndlist(ndlist, vmin=-9, vmax=9):
 """
 prompt : 
 ===
-visualize_ndlist code를 활용해서
-3X3 2차원 list를 여러개 받아 한 줄에 num_on_a_row 개수만큼 시각화를 배치해주는 함수를 만들어줘.
+다음 조건을 만족하는 `visualize_matrices` 함수를 만들어줘:
 
-parameters :
-    ndlist_array : 3X3 2차원 list의 list
-    num_on_a_row : 한 줄에 배치할 개수
+### 기능:
+- 여러 개의 3×3 크기의 2차원 리스트(ndarray)를 받아서 한 줄에 `num_on_a_row` 개씩 시각화한다.
+- 각 그림의 제목(title)에는 자동으로 해당 변수명을 추출하여 표시한다.
+- 컬러맵은 `blue → white → green`의 그라디언트를 사용한다.
+- 값의 범위는 `vmin=-9`, `vmax=9`로 설정한다.
+- 1차원 리스트를 입력받으면, 한 줄짜리 2차원 리스트로 변환하여 출력한다.
+- 서브플롯을 활용하여 여러 개의 행렬을 보기 좋게 배치한다.
+
+### 입력 파라미터:
+- `ndlist_array`: 3×3 크기의 2차원 리스트를 원소로 가지는 리스트 (리스트의 리스트)
+- `vmin`: 색상 스케일의 최소값 (기본값: -9)
+- `vmax`: 색상 스케일의 최대값 (기본값: 9)
+- `num_on_a_row`: 한 줄에 배치할 그림 개수 (기본값: 1)
+
+### 구현 시 참고 사항:
+- `inspect` 모듈을 사용하여 호출자의 프레임에서 변수명을 자동으로 추출한다.
+- `matplotlib`을 사용하여 `imshow()`를 활용해 시각화한다.
+- 값이 실수(float)일 경우 소수점 두 자리까지 표시하고, 정수(int)일 경우 그대로 표시한다.
+- 서브플롯을 생성할 때 빈 공간이 남을 경우 해당 부분의 축을 비활성화한다.
+- `tight_layout()`을 사용하여 플롯이 겹치지 않도록 조정한다.
+
+**사용용 예시**:
+만약 다음과 같은 변수가 존재한다면:
+matrix_a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+matrix_b = [[-3, -2, -1], [0, 1, 2], [3, 4, 5]]
+visualize_matrices([matrix_a, matrix_b], num_on_a_row=2)
 """
-def visualize_ndlists_side_by_side(ndlist_array, vmin=-9, vmax=9, num_on_a_row=1):
+import inspect
+def get_variable_names(value, call_frame):
+    """
+    주어진 값에 해당하는 변수명을 찾는 함수
+    
+    Parameters:
+    -----------
+    value : any
+        찾고자 하는 값
+    call_frame : frame
+        검사할 프레임
+    
+    Returns:
+    --------
+    str
+        찾은 변수명 또는 기본값
+    """
+    for var_name, var_val in call_frame.f_locals.items():
+        if var_val is value:
+            return var_name
+    return "Unknown"
+
+def visualize_matrices(ndlist_array, vmin=-9, vmax=9, num_on_a_row=1):
+    """
+    2차원 리스트들을 시각화하고 각 그림에 자동으로 추출한 변수명을 title로 표시하는 함수
+    
+    Parameters:
+    -----------
+    ndlist_array : list of lists
+        시각화할 2차원 리스트들의 리스트
+    vmin : int, default=-9
+        색상 스케일의 최소값
+    vmax : int, default=9
+        색상 스케일의 최대값
+    num_on_a_row : int, default=1
+        한 줄에 표시할 그림의 개수
+    """
+    # 호출자의 프레임 가져오기
+    caller_frame = inspect.currentframe().f_back
+    
+    # 변수명 자동 추출
+    var_names = []
+    for ndlist in ndlist_array:
+        var_name = get_variable_names(ndlist, caller_frame)
+        var_names.append(var_name)
+    
     # 사용자 정의 색상맵 설정
     cmap = mcolors.LinearSegmentedColormap.from_list(
         'custom_cmap', 
@@ -100,17 +165,27 @@ def visualize_ndlists_side_by_side(ndlist_array, vmin=-9, vmax=9, num_on_a_row=1
     fig, axes = plt.subplots(num_rows, num_on_a_row, figsize=(5 * num_on_a_row, 3 * num_rows))
     axes = np.array(axes).reshape(-1)  # 1차원 배열로 평탄화
 
-    for idx, ndlist in enumerate(ndlist_array):
+    for idx, (ndlist, var_name) in enumerate(zip(ndlist_array, var_names)):
+
         # 배열 변환
-        data = np.array(ndlist)
+        # 1차원 리스트를 2차원 리스트로 변환 (한 줄로)
+        if isinstance(ndlist[0], list):
+            data = np.array(ndlist)  # 이미 2차원 리스트인 경우
+        else:
+            data = np.array([ndlist])  # 1차원 리스트인 경우, 2차원으로 변환
 
         # 시각화 처리
         axes[idx].imshow(data, cmap=cmap, norm=norm, interpolation='none')
         for i in range(data.shape[0]):
             for j in range(data.shape[1]):
-                axes[idx].text(j, i, str(data[i, j]), ha='center', va='center', color='black')
-        
+                # 값이 정수인 경우와 소수인 경우 다르게 처리
+                if isinstance(data[i, j], float):
+                    text = f"{data[i, j]:.2f}"  # 소수점 두 자리까지 출력
+                else:
+                    text = str(data[i, j])  # 정수일 경우 그대로 출력
+                axes[idx].text(j, i, text, ha='center', va='center', color='black')  
         # 제목 추가 및 축 제거
+        axes[idx].set_title(var_name)
         axes[idx].axis('off')
 
     # 남아 있는 빈 플롯 제거
