@@ -71,6 +71,56 @@ def visualize_ndlist(ndlist, vmin=-9, vmax=9):
     # 그래프 출력
     plt.show()
 
+import inspect
+
+def get_variable_names(value, call_frame):
+    """
+    주어진 값에 해당하는 변수명을 찾는 함수
+    
+    Parameters:
+    -----------
+    value : any
+        찾고자 하는 값
+    call_frame : frame
+        검사할 프레임
+    
+    Returns:
+    --------
+    str
+        찾은 변수명 또는 기본값
+    """
+    for var_name, var_val in call_frame.f_locals.items():
+        if var_val is value:
+            return var_name
+    return "Unknown"
+
+def plot_images(images, rows=1, columns=1, titles=None):
+    """
+    주어진 이미지 배열을 서브플롯으로 그리는 함수
+    
+    Parameters:
+    -----------
+    images : list
+        이미지 배열
+    rows : int
+        서브플롯의 행 수
+    columns : int
+        서브플롯의 열 수
+    """
+    call_frame = inspect.currentframe().f_back
+    for i, img in enumerate(images, 1):
+        plt.subplot(rows, columns, i)
+        plt.imshow(img, interpolation='nearest')
+
+        if titles and i-1 < len(titles):
+            title = titles[i-1]
+        else:
+            title = get_variable_names(img, call_frame)
+        
+        plt.title(title)
+        plt.axis('off')
+    plt.show()
+
 """
 prompt : 
 ===
@@ -103,28 +153,6 @@ matrix_a = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 matrix_b = [[-3, -2, -1], [0, 1, 2], [3, 4, 5]]
 visualize_matrices([matrix_a, matrix_b], num_on_a_row=2)
 """
-import inspect
-def get_variable_names(value, call_frame):
-    """
-    주어진 값에 해당하는 변수명을 찾는 함수
-    
-    Parameters:
-    -----------
-    value : any
-        찾고자 하는 값
-    call_frame : frame
-        검사할 프레임
-    
-    Returns:
-    --------
-    str
-        찾은 변수명 또는 기본값
-    """
-    for var_name, var_val in call_frame.f_locals.items():
-        if var_val is value:
-            return var_name
-    return "Unknown"
-
 def visualize_matrices(ndlist_array, vmin=-9, vmax=9, num_on_a_row=1):
     """
     2차원 리스트들을 시각화하고 각 그림에 자동으로 추출한 변수명을 title로 표시하는 함수
