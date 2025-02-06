@@ -437,3 +437,26 @@ def analyze_video(input_file:str, lower_similarity_limit:float=0.9,
             } for s in simularity_groups ]
 
     return _captures_added
+
+import gradio as gr
+
+# library 개발자 영역
+def serve_modified_video(func):
+    def wrapper():
+        def process_video(input_path):
+            output_path = 'modified_video.mp4'  # 내부적으로 설정된 output_path
+            video_array, _, _ = video_2_ndarray(input_path)
+            modified_video = func(video_array)
+            ndarray_2_video(modified_video, output_path)
+            return output_path
+
+        iface = gr.Interface(
+            fn=process_video,
+            inputs=gr.Textbox(label="Input Video Path"),
+            outputs=gr.Video(label="Output Video")
+        )
+
+        # Gradio 인터페이스 실행
+        iface.launch()
+
+    return wrapper
