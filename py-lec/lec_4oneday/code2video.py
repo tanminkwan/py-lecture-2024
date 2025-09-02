@@ -65,6 +65,58 @@ def clear_outputs():
             pass
     return None, ""
 
+def read_files_from_directory(directory_path="./downloaded_files"):
+    """Read all text files from the specified directory recursively"""
+    examples = []
+    
+    if not os.path.exists(directory_path):
+        return [["# No downloaded_files directory found\n# Please create the directory and add example files\nnew_video_array = video_array.copy()"]]
+    
+    # Supported text file extensions
+    text_extensions = ['.py', '.txt', '.md', '.rst', '.sh', '.bat', '.yaml', '.yml', '.json', '.xml', '.html', '.css', '.js', '.sql', '.ini', '.cfg', '.conf']
+    
+    try:
+        for root, dirs, files in os.walk(directory_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                file_name, file_ext = os.path.splitext(file)
+                
+                # Check if file has a supported text extension
+                if file_ext.lower() in text_extensions or file_ext == '':
+                    try:
+                        with open(file_path, 'r', encoding='utf-8') as f:
+                            content = f.read()
+                            
+                        # Get just the filename for display
+                        filename = os.path.basename(file_path)
+                        
+                        # Add filename as comment and content
+                        example_content = f"# {filename}\n{content}"
+                        examples.append([example_content])
+                        
+                    except Exception as e:
+                        # If UTF-8 fails, try other encodings
+                        try:
+                            with open(file_path, 'r', encoding='cp949') as f:
+                                content = f.read()
+                            filename = os.path.basename(file_path)
+                            example_content = f"# {filename}\n{content}"
+                            examples.append([example_content])
+                        except:
+                            # If all encodings fail, add error message
+                            filename = os.path.basename(file_path)
+                            error_content = f"# {filename}\n# Error: Could not read file (encoding issue)\nnew_video_array = video_array.copy()"
+                            examples.append([error_content])
+    
+    except Exception as e:
+        examples = [[f"# Error reading directory: {str(e)}\nnew_video_array = video_array.copy()"]]
+    
+    # If no files found, return default example
+    if not examples:
+        examples = [["# No readable files found in downloaded_files directory\n# Add .py, .txt, or other text files to see them here\nnew_video_array = video_array.copy()"]]
+    
+    return examples
+
 # Sample code for the interface
 sample_code = """# Sample code: Split video horizontally and stack vertically
 width_half = video_array.shape[2] // 2
@@ -94,6 +146,17 @@ with gr.Blocks(title="Video Processor") as demo:
             
             process_btn = gr.Button("Process Video", variant="primary")
             
+            # Dynamic examples section
+            gr.Markdown("### Example Files from downloaded_files/")
+            
+            # Create examples component
+            examples_component = gr.Examples(
+                examples=read_files_from_directory(),
+                inputs=[code_input],
+                label="Click to load file content"
+            )
+            
+
         with gr.Column(scale=1):
             gr.Markdown("### Output")
             
@@ -128,22 +191,37 @@ with gr.Blocks(title="Video Processor") as demo:
         outputs=[video_output, status_output]
     )
     
-    # Add some example codes
-    gr.Markdown("### Example Codes")
+    # Refresh button
+    refresh_btn = gr.Button("🔄 Refresh Examples", variant="secondary")
     
-    examples = [
-        ["# Flip video horizontally\nnew_video_array = np.flip(video_array, axis=2)"],
-        ["# Flip video vertically\nnew_video_array = np.flip(video_array, axis=1)"],
-        ["# Rotate video 180 degrees\nnew_video_array = np.rot90(video_array, k=2, axes=(1, 2))"],
-        ["# Extract first half of frames\nnew_video_array = video_array[:len(video_array)//2]"],
-        ["# Crop center 50% of video\nh, w = video_array.shape[1], video_array.shape[2]\nstart_h, start_w = h//4, w//4\nend_h, end_w = start_h + h//2, start_w + w//2\nnew_video_array = video_array[:, start_h:end_h, start_w:end_w, :]"]
-    ]
+    def refresh_examples():
+        """Refresh the examples by reading files again"""
+        new_examples = read_files_from_directory()
+        return gr.Examples(
+            examples=new_examples,
+            inputs=[code_input],
+            label="Click to load file content"
+        )
     
-    gr.Examples(
-        examples=examples,
-        inputs=[code_input],
-        label="Click to load example"
+    # Note: Due to Gradio limitations, we need to recreate the interface to refresh examples
+    # So we'll provide a message instead
+    '''
+    def on_refresh_click():
+        return "Examples refreshed! Please restart the application to see updated file list."
+    
+    refresh_btn.click(
+        fn=on_refresh_click,
+        outputs=[status_output]
     )
+    '''
+    gr.Markdown("""
+    ### Instructions for Examples:
+    1. Create a `downloaded_files/` directory in the same location as this script
+    2. Add text files (.py, .txt, .md, etc.) with video processing code
+    3. Files will be automatically loaded as examples
+    4. Subdirectories are supported - all files will be found recursively
+    5. Each file's content will be shown with its relative path as a comment
+    """)
 
 if __name__ == "__main__":
     demo.launch()
